@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <title>Edit Profile</title>
+</head>
+<body>
+    <div th:replace="components/header :: header">...</div>
+    <div class="container mt-3">
+        <h1>Edit Profile</h1>
+        <form class="form" th:method="POST" th:object="${newProfile}">
+            <div class="form-outline mb-4">
+                <input type="text" class="form-control" th:placeholder="${profile.firstName}" th:field="*{firstName}" required>
+            </div>
+            <div class="form-outline mb-4">
+                <input type="text" class="form-control" th:placeholder="${profile.lastName}" th:field="*{lastName}" required>
+            </div>
+            <div class="row mb-4">
+                <div class="col" th:each="eachGender : ${T(com.example.demo.models.Gender).values()}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="eachGender" id="exampleRadios1"
+                               th:field = "*{gender}" th:value="${eachGender}" th:checked="${profile.gender}" required>
+                        <label class="form-check-label" for="exampleRadios1" th:text="${eachGender}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-outline mb-4">
+                <select size="1" class="form-control" th:field="*{groupId}">
+                    <option class="option" th:each="group: ${groups}" th:value="${group.groupID}"
+                            th:selected="${group.groupID == profile.groupId.groupID}"
+                            th:text="${group.groupName}"></option>
+                </select>
+            </div>
+            <div class="form-outline mb-4">
+                <input type="date" id="form3Example5" class="form-control" th:placeholder="${profile.age}" th:field="*{age}" min="1920-01-01" th:attr="max=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+            </div>
+            <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="form-outline mb-4">
+                <select size="1" class="form-control" th:field="${profile.roles[0]}">
+                    <option class="option" th:each="role: ${roles}" th:value="${role.roleId}"
+                            th:selected="${role.roleId == profile.roles[0]}"
+                            th:text="${role.roleName}"></option>
+                </select>
+            </div>
+            <input type="submit" class="btn btn-primary btn-block col-3 mb-4"value="Update">
+        </form>
+    </div>
+</body>
+</html>

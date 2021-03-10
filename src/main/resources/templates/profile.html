@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <title>Profile</title>
+</head>
+<body>
+    <div th:replace="components/header :: header">...</div>
+    <div class="container mt-3">
+        <div th:object="${profile}" class="alert alert-info mt-0">
+            <h4 th:text="${profile.username}"></h4>
+            <p><b>Name: </b><span th:text="${profile.firstName}"></span></p>
+            <p><b>Surname: </b><span th:text="${profile.lastName}"></span></p>
+            <p><b>Birthday: </b><span th:text="${#dates.format(profile.age, 'dd-MM-yyyy')}"></span></p>
+            <p><b>Gender: </b><span th:text="${profile.gender.toString()}"></span></p>
+            <p><b>Group: </b><span th:text="${profile.groupId.groupName}"></span></p>
+            <p th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                <b>Role:</b>
+                <span th:text="${profile.roles[0].roleName}"></span>
+            </p>
+            <p>
+                <b>My Interests</b>
+                <span th:each="a, iterStat : ${profile.profileInterests}" th:text="!${iterStat.last} ? ${a.interestName} + ',': ${a.interestName}"></span>
+            </p>
+            <a th:if="${#authorization.expression('hasRole(''ADMIN'')') or #authentication.getPrincipal().getUsername() == profile.username}"
+               th:href="'/profile/edit/'+${profile.profileId}+''" class="btn btn-warning">Update user</a>
+        </div>
+        <div class="row">
+            <th:block th:each="answer : ${profile.userAnswers}">
+                <h1  th:text="${answer.questionId.questionName}"></h1>
+                <h3 th:text="'You have answered: ' + ${answer.answer}+'!'"></h3>
+                <h3 th:if="${answer.questionId.countAnswers > 0}" th:text="'You have answered like '+${answer.participatedUsers.size()}+' people out of '+${answer.questionId.countAnswers}+' overall!'" ></h3>
+                <a th:if="${#dates.createNow().before(answer.questionId.expireDate)}" th:href="'/profile/deleteVote/'+${answer.answerId}" class="btn btn-primary">Revote</a>
+            </th:block>
+        </div>
+    </div>
+</body>
+</html>
