@@ -16,98 +16,98 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <title>Home Page</title>
-<style>
-    * {
-        box-sizing: border-box;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    .flex-container {
-        display: flex;
-        flex-direction: row;
-        font-size: 20px;
-        text-align: center;
-        width: 100%;
-        height: 100%;
-    }
+        .flex-container {
+            display: flex;
+            flex-direction: row;
+            font-size: 20px;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
 
-    .flex-item-left {
-        background-color: #f1f1f1;
-        padding: 10px;
-        width: 100%;
-        height: 100%;
-    }
+        .flex-item-left {
+            background-color: #f1f1f1;
+            padding: 10px;
+            width: 100%;
+            height: 100%;
+        }
 
-    .flex-item-right {
-        background-color: dodgerblue;
-        padding: 10px;
-        height: 100%;
-        width: 100%;
-    }
-    #actualQuestionCont{
-        width:100%;
-        height: 100%;
-    }
-    html,body,.container,.flex-container{
-        height: 100%;
-    }
-    /* Responsive layout - makes a one column-layout instead of two-column layout */
-    /*@media (max-width: 3500px) {*/
-    /*    .flex-container {*/
-    /*        flex-direction: column;*/
-    /*    }*/
-    /*}*/
-</style>
+        .flex-item-right {
+            background-color: dodgerblue;
+            padding: 10px;
+            height: 100%;
+            width: 100%;
+        }
+        #actualQuestionCont{
+            width:100%;
+            height: 100%;
+        }
+        html,body,.container,.flex-container{
+            height: 100%;
+        }
+        /* Responsive layout - makes a one column-layout instead of two-column layout */
+        /*@media (max-width: 3500px) {*/
+        /*    .flex-container {*/
+        /*        flex-direction: column;*/
+        /*    }*/
+        /*}*/
+    </style>
 </head>
 <body>
-    <div th:replace="components/header :: header">...</div>
-    <div class="container">
+<div th:replace="components/header :: header">...</div>
+<div class="container">
 
-        <div id="actualQuestionCont" class="col-6" th:if="${!questions.isEmpty()}">
-            <div class="flex-container">
-                <div class="flex-item-left">
-            <h1>Active Questions: </h1>
-            <div th:if="${#dates.createNow().before(question.expireDate)}" th:each="question: ${questions}">
-                <h2 th:text="${question.getQuestionName()}"></h2>
-                <h5 th:text="'Question expire date: ' + ${#dates.format(question.getExpireDate(), 'dd-MM-yyyy HH:mm')}"></h5>
-                <form method="post" th:if="${#authorization.expression('isAuthenticated()')
+    <div id="actualQuestionCont" class="col-6" th:if="${!questions.isEmpty()}">
+        <div class="flex-container">
+            <div class="flex-item-left">
+                <h1>Active Questions: </h1>
+                <div class="card mb-5" th:if="${#dates.createNow().before(question.expireDate)}" th:each="question: ${questions}">
+                    <h2 th:text="${question.getQuestionName()}"></h2>
+                    <h5 th:text="'Question expire date: ' + ${#dates.format(question.getExpireDate(), 'dd-MM-yyyy HH:mm')}"></h5>
+                    <form method="post" th:if="${#authorization.expression('isAuthenticated()')
             and #authorization.expression('!hasRole(''ADMIN'')')}" th:object="${newAnswer}">
 
-                    <div th:each="thisAnswer : ${question.answers}" th:if="${thisAnswer.questionId == question}">
-                        <input type="hidden" th:attr="name='questionId.questionId'" th:value="${question.questionId}">
-                        <input type="radio" th:id="${thisAnswer.answerId}" th:name="${question}" th:value="${thisAnswer.answer}"
-                               th:field="${newAnswer.answer}">
-                        <label th:for="${thisAnswer.answerId}" th:text="${thisAnswer.answer}"/>
-                    </div>
+                        <div th:each="thisAnswer : ${question.answers}" th:if="${thisAnswer.questionId == question}">
+                            <input type="hidden" th:attr="name='questionId.questionId'" th:value="${question.questionId}">
+                            <input type="radio" th:id="${thisAnswer.answerId}" th:name="${question}" th:value="${thisAnswer.answer}"
+                                   th:field="${newAnswer.answer}">
+                            <label th:for="${thisAnswer.answerId}" th:text="${thisAnswer.answer}"/>
+                        </div>
 
-                    <input type="submit" value="Answer">
-                </form>
-                <h5>Tags: <span th:each="a, iterStat : ${question.questionInterests}" th:text="!${iterStat.last} ? '#'+${a.interestName} + ' ': '#'+${a.interestName}"></span></h5>
-                <i><h5 th:text="${question.countAnswers} + ' users have been voted'"></h5></i>
-            </div>
-                    </div>
-                <div class="flex-item-right">
-            <h1>Expired questions: </h1>
-            <div th:if="${#dates.createNow().after(question.expireDate)}" th:each="question: ${questions}">
-                <h2 th:text="${question.getQuestionName()}"></h2>
-                <h5 th:text="'The question has been expired on: ' + ${#dates.format(question.getExpireDate(), 'dd-MM-yyyy HH:mm')}"></h5>
-                <div>
-
-                    <div th:each="thisAnswer : ${question.answers}" th:if="${thisAnswer.questionId == question}">
-                        <p th:id="'stat'+${thisAnswer.answerId}" th:text="${thisAnswer.answer}"></p>
-                        <label th:if="${question.countAnswers > 0}" th:for="'stat'+${thisAnswer.answerId}"
-                               th:text="${#numbers.formatDecimal((thisAnswer.participatedUsers.size()*100/question.countAnswers), 1, 'POINT', 2, 'COMMA')}+'%'"/>
-                        <label th:if="${question.countAnswers == 0}" th:for="'stat'+${thisAnswer.answerId}"
-                               th:text="'0.00%'"/>
-                    </div>
-
+                        <input type="submit" value="Answer">
+                    </form>
+                    <h5>Tags: <span th:each="a, iterStat : ${question.questionInterests}" th:text="!${iterStat.last} ? '#'+${a.interestName} + ' ': '#'+${a.interestName}"></span></h5>
+                    <i><h5 th:text="${question.countAnswers} + ' users have been voted'"></h5></i>
                 </div>
-                <h5>Tags: <span th:each="a, iterStat : ${question.questionInterests}" th:text="!${iterStat.last} ? '#'+${a.interestName} + ' ': '#'+${a.interestName}"></span></h5>
-                <i><h5 th:text="${question.countAnswers} + ' users have been voted'"></h5></i>
             </div>
-        </div>
+            <div class="flex-item-right">
+                <h1>Expired questions: </h1>
+                <div class="card" th:if="${#dates.createNow().after(question.expireDate)}" th:each="question: ${questions}">
+                    <h2 th:text="${question.getQuestionName()}"></h2>
+                    <h5 th:text="'The question has been expired on: ' + ${#dates.format(question.getExpireDate(), 'dd-MM-yyyy HH:mm')}"></h5>
+                    <div>
 
-    </div>
+                        <div th:each="thisAnswer : ${question.answers}" th:if="${thisAnswer.questionId == question}">
+                            <p th:id="'stat'+${thisAnswer.answerId}" th:text="${thisAnswer.answer}"></p>
+                            <label th:if="${question.countAnswers > 0}" th:for="'stat'+${thisAnswer.answerId}"
+                                   th:text="${#numbers.formatDecimal((thisAnswer.participatedUsers.size()*100/question.countAnswers), 1, 'POINT', 2, 'COMMA')}+'%'"/>
+                            <label th:if="${question.countAnswers == 0}" th:for="'stat'+${thisAnswer.answerId}"
+                                   th:text="'0.00%'"/>
+                        </div>
+
+                    </div>
+                    <h5>Tags: <span th:each="a, iterStat : ${question.questionInterests}" th:text="!${iterStat.last} ? '#'+${a.interestName} + ' ': '#'+${a.interestName}"></span></h5>
+                    <i><h5 th:text="${question.countAnswers} + ' users have been voted'"></h5></i>
+                </div>
+            </div>
+
         </div>
     </div>
+</div>
 </body>
 </html>
