@@ -18,6 +18,7 @@
 </head>
 <body>
 <div class="container">
+    <div th:replace="components/header :: header">...</div>
     <div th:each="question: ${questions}">
         <h2 th:text="${question.getQuestionName()}"></h2>
         <h5 th:text="'Expire date ' + ${#dates.format(question.getExpireDate(), 'dd-MM-yyyy HH:mm')}"></h5>
@@ -34,6 +35,9 @@
         </div>
         <h5>Tags: <span th:each="a, iterStat : ${question.questionInterests}" th:text="!${iterStat.last} ? '#'+${a.interestName} + ' ': '#'+${a.interestName}"></span></h5>
         <i><h5 th:text="${question.countAnswers} + ' users have been voted'"></h5></i>
+    </div>
+    <div th:if="${questions.isEmpty()}">
+        <h1>There are no questions with such interest</h1>
     </div>
 </div>
 </body>

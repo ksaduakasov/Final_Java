@@ -39,10 +39,12 @@
         </div>
         <div class="row">
             <th:block th:each="answer : ${profile.userAnswers}">
-                <h1  th:text="${answer.questionId.questionName}"></h1>
-                <h3 th:text="'You have answered: ' + ${answer.answer}+'!'"></h3>
-                <h3 th:if="${answer.questionId.countAnswers > 0}" th:text="'You have answered like '+${answer.participatedUsers.size()}+' people out of '+${answer.questionId.countAnswers}+' overall!'" ></h3>
-                <a th:if="${#dates.createNow().before(answer.questionId.expireDate)}" th:href="'/profile/deleteVote/'+${answer.answerId}" class="btn btn-primary">Revote</a>
+                <div class="card mb-5">
+                    <h1  th:text="${answer.questionId.questionName}"></h1>
+                    <h3 th:text="'You have answered: ' + ${answer.answer}+'!'"></h3>
+                    <h3 th:if="${answer.questionId.countAnswers > 0}" th:text="'You have answered like '+${answer.participatedUsers.size()}+' people out of '+${answer.questionId.countAnswers}+' overall!'" ></h3>
+                    <a th:if="${#dates.createNow().before(answer.questionId.expireDate)}" th:href="'/profile/deleteVote/'+${answer.answerId}" class="btn btn-primary">Revote</a>
+                </div>
             </th:block>
         </div>
     </div>
