@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <title>Question Add</title>
+</head>
+<body>
+    <div th:replace="components/header :: header">...</div>
+    <div class="container d-flex justify-content-center">
+        <div class="col-6 p-5 text-center bg-light">
+            <h1>Adding a New Question</h1>
+            <form class="form" name="f" th:action="@{/question/add}" th:object="${questionDTO}" method="post">
+                <div class="form-outline mb-4">
+                    <input id="form1example" type="text" class="form-control" placeholder="Your Question"
+                    th:field="*{questionName}">
+                </div>
+                <div class="form-outline mb-4">
+                    <input type="datetime-local" id="form3Example5" class="form-control"
+                           th:field="*{expireDate}" th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}">
+                </div>
+                <div class="form-outline mb-4">
+                    <input id="option1" type="text" class="form-control" placeholder="Your 1 Option"
+                    th:field="*{answers[0].answer}">
+                </div>
+                <div id="last" class="form-outline mb-4">
+                    <input id="option2" type="text" class="form-control" placeholder="Your 2 Option"
+                    th:field="*{answers[1].answer}">
+                </div>
+                <div class="form-outline mb-4">
+                    <th:block th:each="interst : ${interests}">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" name="questionInterests"
+                                   type="checkbox"
+                                   th:id="'inlineCheckbox1'+${interst.getInterestId()}"
+                                   th:field="*{questionInterests}"
+                                   th:value="${interst.getInterestId()}">
+                            <label class="form-check-label" th:text="${interst.getInterestName()}" th:for="'inlineCheckbox1'+${interst.getInterestId()}"></label>
+                        </div>
+                    </th:block>
+                </div>
+                <a class="btn btn-primary btn-block" id="button" onclick="addOption()">Add Option</a>
+                <input type="submit" class="btn btn-primary btn-block" value="Add question" name="submit">
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    let counter = 3
+    let maximumNum = 6
+    function addOption() {
+        if (counter <= maximumNum) {
+            $("<div id='last' class='form-outline mb-4'>" +
+                " <input id='option"+ counter + "'type='text' class='form-control' placeholder='Your " + counter++ +" Option' name='answers["+(counter-2)+"].answer'>" +
+                "</div>").insertAfter("#last")
+            $('.form').find('#last').first().removeAttr('id');
+        } else {
+            alert("There are several limitations. Only 6 options are possible!")
+        }
+    }
+</script>
+</html>
